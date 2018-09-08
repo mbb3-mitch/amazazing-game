@@ -1,128 +1,138 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 @import url('https://fonts.googleapis.com/css?family=Abel|Montserrat');
 
-html,body {
+html,
+body {
   font-family: 'Montserrat', sans-serif;
   height: 100%;
   width: 100%;
-  margin : 0px;
-  padding : 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
-#root{
-  position:relative;
+#root {
+  position: relative;
   height: 100%;
   width: 100%;
   padding-top: 56px;
 
-  .enter-chat{
+  .enter-chat {
     display: block;
-    position:relative;
+    position: relative;
     height: 100%;
     width: 100%;
   }
 
-  .chat{
+  .chat {
     display: block;
-    position:relative;
+    position: relative;
     height: 100%;
     width: 100%;
 
-    .users, .messages{
+    .users,
+    .messages,
+    .game-window {
       padding: 0px;
       float: left;
     }
 
-    .users {
+    .game-window {
+      background-color: #f7f7f7;
+      min-height: 70vh;
+    }
 
-      .user{
-        border-bottom : 1px solid #e9ebee;
+    .users {
+      .user {
+        border: 1px solid #e9ebee;
         padding: 10px;
 
-        .fa-user{
-          color :#343a40;
+        .fa-user {
+          color: #343a40;
         }
       }
     }
 
-    .messages{
+    .messages {
       border-left: 1px solid #e9ebee;
-      overflow:auto;
+      border-top: 1px solid #e9ebee;
+      overflow: auto;
 
-      .message{
+      .message {
         padding: 10px;
         display: block;
         min-height: 50px;
-        height : auto !important;
-        clear:both;
+        height: auto !important;
+        clear: both;
 
-        .username, .data{
+        .username,
+        .data {
           display: inline-block;
-          float:left;
+          float: left;
           margin-right: 10px;
         }
       }
 
-      .no-message{
+      .no-message {
         margin: 10px;
       }
     }
 
-    .chatbox, .gifbox{
-      position:fixed;
+    .chatbox,
+    .gifbox {
+      position: fixed;
       bottom: 0px;
       padding: 0px;
     }
 
-    .gifbox{
+    .gifbox {
       height: 200px;
-      width : 100%;
+      width: 100%;
       border-left: 1px solid #e9ebee;
-      .input-group{
+
+      .input-group {
         padding: 0px;
       }
 
-      .gifs{
+      .gifs {
         height: 160px !important;
-        overflow-y : scroll;
+        overflow-y: scroll;
         padding: 5px;
 
-        .gif{
-          position:relative;
+        .gif {
+          position: relative;
           display: inline-block;
-          float:left;
+          float: left;
           margin-right: 5px;
           padding-bottom: 5px;
 
-          &:hover{
-            .share{
+          &:hover {
+            .share {
               display: block;
             }
           }
 
-          .share{
-            position:absolute;
-            top:0;
-            right:0;
-            bottom:0;
-            left:0;
-            margin:auto;
+          .share {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
             height: 30px;
             width: 30px;
             font-size: 30px;
             cursor: pointer;
-            color:white;
+            color: white;
             display: none;
           }
         }
 
-        .searching{
+        .searching {
           display: block;
-          color:grey;
+          color: grey;
           font-size: 18px;
         }
       }
     }
   }
 }
-

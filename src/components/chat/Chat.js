@@ -1,5 +1,6 @@
 import React from 'react';
 import Users from "./Users";
+import Game from "./Game";
 import Messages from "./Messages";
 import EnterChat from "./EnterChat";
 import socketIOClient from 'socket.io-client';
@@ -94,6 +95,7 @@ class Chat extends React.Component {
             <div className="chat">
                 {this.state.chat_ready ? (
                     <React.Fragment>
+                        <Game/>
                         <Users users={this.state.users}/>
                         <Messages
                             sendMessage={this.sendMessage.bind(this)}

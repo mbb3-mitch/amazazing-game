@@ -1,7 +1,7 @@
 {
-  "name": "chatter",
+  "name": "Amazazing",
   "version": "0.0.1",
-  "description": "real-time chat app with GIFs support",
+  "description": "A real time amazazing game.",
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",
@@ -36,7 +36,7 @@
     "file-loader": "^1.1.11",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.0",
-    "node-sass": "^4.9.3",
+    "node-sass": "^4.9.0",
     "postcss-loader": "^2.1.5",
     "sass-loader": "^7.0.1",
     "style-loader": "^0.21.0",

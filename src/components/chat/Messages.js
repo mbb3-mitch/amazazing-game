@@ -10,7 +10,7 @@ class Messages extends React.Component {
         this.state = {
             height : 0,
             messages : props.messages,
-            gif : false,
+            gif : false
         }
     }
 
