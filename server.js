@@ -7,6 +7,7 @@ let port = 8989;
 app.use('/assets', express.static(__dirname + '/dist'));
 
 let users = {};
+let SOCKET_LIST = {};
 
 getUsers = () => {
     return Object.keys(users).map(function(key){
@@ -67,9 +68,10 @@ server.listen(port, () => {
 });
 
 
+
 io.on('connection', (socket) => {
-    let query = socket.request._query,
-        user = {
+	let query = socket.request._query;
+	let user = {
             username : query.username,
             uid : query.uid,
             socket_id : socket.id
@@ -84,6 +86,10 @@ io.on('connection', (socket) => {
         io.emit('updateUsersList', getUsers());
     }
 
+	socket.x = 0;
+	socket.y = 0;
+    SOCKET_LIST[socket.id]= socket;
+
     socket.on('message', (data) => {
         console.log(data);
         socket.broadcast.emit('message', {
@@ -92,6 +98,18 @@ io.on('connection', (socket) => {
             uid : data.uid
         });
     });
+
+    setInterval(function(){
+        Object.keys(SOCKET_LIST).forEach((key)=>{
+            let socket = SOCKET_LIST[key];
+            socket.x++;
+            socket.y++;
+            socket.emit('newPosition', {
+                x : socket.x,
+                y : socket.y
+            })
+        })
+    }, 1000);
 
     socket.on('disconnect', () => {
         removeSocket(socket.id);
