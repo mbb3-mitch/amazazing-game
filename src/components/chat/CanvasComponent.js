@@ -25,7 +25,11 @@ class CanvasComponent extends React.Component {
 		this.socket.on('newPosition', function(data) {
 			console.log(data);
 			ctx.clearRect(0, 0, 500, 500);
-			ctx.fillText('P', data.x, data.y);
+			data.forEach((datum)=>{
+				ctx.fillStyle = datum.color;
+				ctx.fillText(datum.display, datum.x, datum.y);
+			});
+
 		}.bind(this));
 	}
 

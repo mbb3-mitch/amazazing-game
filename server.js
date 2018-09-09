@@ -88,6 +88,8 @@ io.on('connection', (socket) => {
 
 	socket.x = 0;
 	socket.y = 0;
+	socket.display = user.username.substr(0,3);
+	socket.color  = getRandomColor();
     SOCKET_LIST[socket.id]= socket;
 
     socket.on('message', (data) => {
@@ -100,19 +102,36 @@ io.on('connection', (socket) => {
     });
 
     setInterval(function(){
+	    let pack = [];
         Object.keys(SOCKET_LIST).forEach((key)=>{
-            let socket = SOCKET_LIST[key];
-            socket.x++;
-            socket.y++;
-            socket.emit('newPosition', {
-                x : socket.x,
-                y : socket.y
-            })
-        })
+	        let socket = SOCKET_LIST[key];
+	        socket.x++;
+	        socket.y++;
+	        pack.push({
+		        x : socket.x++,
+		        y : socket.y++,
+                display : socket.display,
+                color : socket.color
+	        });
+        });
+	    Object.keys(SOCKET_LIST).forEach((key)=> {
+		    socket.emit('newPosition', pack);
+	    });
     }, 1000);
 
     socket.on('disconnect', () => {
         removeSocket(socket.id);
+        delete SOCKET_LIST[socket.id];
         io.emit('updateUsersList', getUsers());
     });
 });
+
+
+function getRandomColor() {
+	let letters = '0123456789ABCDEF';
+	let color = '#';
+	for (let i = 0; i < 6; i++) {
+		color += letters[Math.floor(Math.random() * 16)];
+	}
+	return color;
+}
