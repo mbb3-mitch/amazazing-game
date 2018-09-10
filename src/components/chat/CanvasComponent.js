@@ -8,24 +8,24 @@ class CanvasComponent extends React.Component {
 	}
 
 	componentDidMount() {
-		this.updateCanvas();
+		this.initializeCanvas();
+		this.initializeSocketListeners();
 	}
 
-	updateCanvas() {
-		const ctx = this.refs.canvas.getContext('2d');
-		ctx.font = '30px Arial';
-	
-		this.socket.on('newPosition', function(data) {
-			console.log(data);
-			ctx.clearRect(0, 0, 500, 500);
+	initializeCanvas() {
+		this.ctx = this.refs.canvas.getContext('2d');
+		this.ctx.font = '30px Arial';
+	}
+
+	initializeSocketListeners(){
+		this.socket.on('newPosition', (data) =>{
+			this.ctx.clearRect(0, 0, 500, 500);
 			data.forEach((datum)=>{
-				ctx.fillStyle = datum.color;
-				ctx.fillText(datum.display, datum.x, datum.y);
+				this.ctx.fillStyle = datum.color;
+				this.ctx.fillText(datum.display, datum.x, datum.y);
 			});
-
-		}.bind(this));
+		});
 	}
-
 
 	render() {
 		return (

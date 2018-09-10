@@ -45,7 +45,6 @@ class Chat extends React.Component {
     }
 
     sendMessage(message, e){
-        console.log(message);
         this.setState({
             messages : this.state.messages.concat([{
                username : localStorage.getItem('username'),
@@ -74,20 +73,22 @@ class Chat extends React.Component {
         this.socket = socketIOClient('ws://localhost:8989', {
             query : 'username='+this.state.username+'&uid='+this.state.uid
         });
+	    this.initializeSocketListeners();
+    }
 
-        this.socket.on('updateUsersList', function (users) {
-            console.log(users);
-            this.setState({
-                users : users
-            });
-        }.bind(this));
+	initializeSocketListeners(){
+		this.socket.on('updateUsersList', (users) =>{
+			this.setState({
+				users : users
+			});
+		});
 
-        this.socket.on('message', function (message) {
-            this.setState({
-                messages : this.state.messages.concat([message])
-            });
-            this.scrollToBottom();
-        }.bind(this));
+		this.socket.on('message', (message) =>{
+			this.setState({
+				messages : this.state.messages.concat([message])
+			});
+			this.scrollToBottom();
+		});
     }
 
     render() {

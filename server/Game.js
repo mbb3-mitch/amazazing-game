@@ -60,7 +60,6 @@ class Game {
 
 	initializeSocketListeners(socket, player) {
 		socket.on('message', (data) => {
-			console.log(data);
 			socket.broadcast.emit('message', {
 				username : data.username,
 				message : data.message,

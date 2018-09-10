@@ -51,6 +51,8 @@ body {
     }
 
     .users {
+      overflow: auto;
+      max-height: 30vh;
       .user {
         border: 1px solid #e9ebee;
         padding: 10px;
@@ -65,6 +67,7 @@ body {
       border-left: 1px solid #e9ebee;
       border-top: 1px solid #e9ebee;
       overflow: auto;
+      max-height: 200px;
 
       .message {
         padding: 10px;

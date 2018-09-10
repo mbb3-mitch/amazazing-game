@@ -92,7 +92,6 @@ class GifBox extends React.Component{
     }
 
     sendGIF(gif, e){
-        console.log(gif);
         this.props.sendMessage({
             type : 'gif',
             url : gif.original
