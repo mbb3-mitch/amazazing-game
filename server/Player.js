@@ -1,4 +1,5 @@
 const utils = require('./utils/utils');
+const Constants = require('./constants');
 class Player {
 	/**
 	 *  Player of the game
@@ -18,16 +19,16 @@ class Player {
 
 	updatePosition() {
 		if (this.pressingUp) {
-			this.y += this.maxSpeed;
+			this.y = this.y + this.maxSpeed > Constants.GAME_HEIGHT ? 0 : this.y + this.maxSpeed;
 		}
 		if (this.pressingRight) {
-			this.x += this.maxSpeed;
+			this.x = this.x + this.maxSpeed > Constants.GAME_WIDTH ? 0 : this.x + this.maxSpeed;
 		}
 		if (this.pressingDown) {
-			this.y -= this.maxSpeed;
+			this.y = this.y + this.maxSpeed < 0 ? Constants.GAME_HEIGHT : this.y - this.maxSpeed;
 		}
 		if (this.pressingLeft) {
-			this.x -= this.maxSpeed;
+			this.x = this.x + this.maxSpeed < 0 ? Constants.GAME_HEIGHT : this.x - this.maxSpeed;
 		}
 	}
 }
