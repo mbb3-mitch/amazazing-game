@@ -8,7 +8,21 @@ class Game extends React.Component {
 	    this.gameCanvas = React.createRef();
     }
 
-    render() {
+	_handleKeyDown(event)  {
+		alert();
+	}
+
+
+	componentWillMount() {
+		document.addEventListener("keydown", this._handleKeyDown.bind(this));
+
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener("keydown", this._handleKeyDown.bind(this));
+	}
+
+	render() {
         return (
             <div className="game-window col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <CanvasComponent/>

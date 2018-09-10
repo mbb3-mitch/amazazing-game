@@ -21,7 +21,7 @@ class EnterChat extends React.Component{
     onChange(e){
         this.setState({
             username : e.target.value
-        })
+        });
     }
 
     render(){

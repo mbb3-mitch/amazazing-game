@@ -33,6 +33,7 @@ class CanvasComponent extends React.Component {
 		}.bind(this));
 	}
 
+
 	render() {
 		return (
 			<canvas id='ctx' ref="canvas" width={500} height={500}/>

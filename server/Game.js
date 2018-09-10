@@ -30,7 +30,7 @@ class Game {
 		    }
 
 		    this.SOCKET_LIST[socket.id] = socket;
-		    this.PLAYER_LIST[socket.id] = this.createPlayer(socket.id, user.username.substr(0, 3), utils.getRandomColor());
+		    this.createPlayer(socket, user);
 
 		    socket.on('message', (data) => {
 			    console.log(data);
@@ -41,23 +41,8 @@ class Game {
 			    });
 		    });
 
-		    setInterval(()=>{
-			    let pack = [];
-			    Object.keys(this.PLAYER_LIST).forEach((key)=>{
-				    let player = this.PLAYER_LIST[key];
-				    player.x++;
-				    player.y++;
-				    pack.push({
-					    x : player.x++,
-					    y : player.y++,
-					    display : player.display,
-					    color : player.color
-				    });
-			    });
-			    Object.keys(this.SOCKET_LIST).forEach((key)=> {
-				    socket.emit('newPosition', pack);
-			    });
-		    }, 1000);
+
+		    this.run();
 
 		    socket.on('disconnect', () => {
 			    this.removeSocket(socket.id);
@@ -66,6 +51,27 @@ class Game {
 			    this.io.emit('updateUsersList', this.getUsers());
 		    });
 	    });
+    }
+
+    run(){
+	    setInterval(()=>{
+		    let pack = [];
+		    Object.keys(this.PLAYER_LIST).forEach((key)=>{
+			    let player = this.PLAYER_LIST[key];
+			    player.x++;
+			    player.y++;
+			    pack.push({
+				    x : player.x++,
+				    y : player.y++,
+				    display : player.display,
+				    color : player.color
+			    });
+		    });
+		    Object.keys(this.SOCKET_LIST).forEach((key)=> {
+			    this.SOCKET_LIST[key].emit('newPosition', pack);
+		    });
+	    }, 1000);
+
     }
 
 	getUsers(){
@@ -92,14 +98,20 @@ class Game {
 		}, this.users);
 	}
 
-	createPlayer(id, display, color){
-		return {
-			x : 250,
-			y : 250,
-			id,
-			display,
-			color
-		}
+	createPlayer(socket, user){
+        let playerConfig = {
+            id : socket.id,
+            display : user.username.substr(0, 3),
+            color : utils.getRandomColor(),
+            x : 250,
+            y : 250,
+            maxSpeed: 10,
+            pressingUp: false,
+            pressingRight: false,
+            pressingDown: false,
+            pressingLeft: false,
+        };
+		this.PLAYER_LIST[socket.id] = new Player(playerConfig);
 	}
 
 	removeSocket(socket_id){
