@@ -105,14 +105,6 @@ class Game {
         let playerConfig = {
             id : socket.id,
             display : user.username.substr(0, 3),
-            color : utils.getRandomColor(),
-            x : 0,
-            y : 0,
-            maxSpeed: 10,
-            pressingUp: false,
-            pressingRight: false,
-            pressingDown: false,
-            pressingLeft: false,
         };
         let player = new Player(playerConfig);
 		this.PLAYER_LIST[socket.id] = player;

@@ -14,7 +14,16 @@ class Player {
 	 * @param config.maxSpeed
 	 */
     constructor(config) {
-	   Object.assign(this, config)
+		this.id = config.id;
+		this.display = config.display;
+		this.color = utils.getRandomColor();
+		this.x = 250 || config.x;
+		this.y = 250 || config.y;
+		this.maxSpeed = 10 || config.maxSpeed;
+		this.pressingUp = false;
+		this.pressingRight = false;
+		this.pressingDown = false;
+		this.pressingLeft = false;
     }
 
 	updatePosition() {
