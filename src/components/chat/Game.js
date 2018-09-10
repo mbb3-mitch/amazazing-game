@@ -45,7 +45,7 @@ class Game extends React.Component {
 	render() {
         return (
             <div className="game-window col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <CanvasComponent/>
+                <CanvasComponent socket={this.socket}/>
             </div>
         )
     }
