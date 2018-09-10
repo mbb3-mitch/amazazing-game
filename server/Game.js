@@ -2,6 +2,7 @@ const Player = require('./Player');
 const Socket = require('./Socket');
 const User = require('./User');
 const utils = require('./utils/utils');
+const _ = require('underscore');
 
 class Game {
     constructor(config) {
@@ -31,33 +32,8 @@ class Game {
 
 		    this.SOCKET_LIST[socket.id] = socket;
 		    let player = this.createPlayer(socket, user);
+		    this.initializeSocketListeners(socket, player);
 
-		    socket.on('message', (data) => {
-			    console.log(data);
-			    socket.broadcast.emit('message', {
-				    username : data.username,
-				    message : data.message,
-				    uid : data.uid
-			    });
-		    });
-
-		    socket.on('disconnect', () => {
-			    this.removeSocket(socket.id);
-			    delete this.SOCKET_LIST[socket.id];
-			    delete this.PLAYER_LIST[socket.id];
-			    this.io.emit('updateUsersList', this.getUsers());
-		    });
-
-		    socket.on('keyPress',function(data){
-			    if(data.inputId === 'left')
-				    player.pressingLeft = data.state;
-			    else if(data.inputId === 'right')
-				    player.pressingRight = data.state;
-			    else if(data.inputId === 'up')
-				    player.pressingUp = data.state;
-			    else if(data.inputId === 'down')
-				    player.pressingDown = data.state;
-		    });
 
 		    this.run();
 	    });
@@ -66,8 +42,7 @@ class Game {
     run(){
 	    setInterval(()=>{
 		    let pack = [];
-		    Object.keys(this.PLAYER_LIST).forEach((key)=>{
-			    let player = this.PLAYER_LIST[key];
+		    _.each(this.PLAYER_LIST, (player)=>{
 			    player.updatePosition();
 			    pack.push({
 				    x : player.x,
@@ -76,16 +51,46 @@ class Game {
 				    color : player.color
 			    });
 		    });
-		    Object.keys(this.SOCKET_LIST).forEach((key)=> {
-			    this.SOCKET_LIST[key].emit('newPosition', pack);
+		    _.each(this.SOCKET_LIST, (socket) => {
+			    socket.emit('newPosition', pack);
 		    });
 	    }, 1000/25);
 
     }
 
+	initializeSocketListeners(socket, player) {
+		socket.on('message', (data) => {
+			console.log(data);
+			socket.broadcast.emit('message', {
+				username : data.username,
+				message : data.message,
+				uid : data.uid
+			});
+		});
+
+		socket.on('keyPress', function(data) {
+			if (data.inputId === 'up') {
+				player.pressingUp = data.state;
+			} else if (data.inputId === 'right') {
+				player.pressingRight = data.state;
+			} else if (data.inputId === 'down') {
+				player.pressingDown = data.state;
+			} else if (data.inputId === 'left') {
+				player.pressingLeft = data.state;
+			}
+		});
+
+		socket.on('disconnect', () => {
+			this.removeSocket(socket.id);
+			delete this.SOCKET_LIST[socket.id];
+			delete this.PLAYER_LIST[socket.id];
+			this.io.emit('updateUsersList', this.getUsers());
+		});
+	}
+
 	getUsers(){
-		return Object.keys(this.users).map((key) =>{
-			return this.users[key].username
+		return _.map(this.users, (user)=>{
+			return user.username;
 		});
 	}
 
@@ -127,8 +132,8 @@ class Game {
 
 	removeSocket(socket_id){
 		let uid = '';
-		Object.keys(this.users).map((key)=> {
-			let sockets = this.users[key].sockets;
+		_.each(this.users, (user, key)=> {
+			let sockets = user.sockets;
 			if (sockets.indexOf(socket_id) !== -1) {
 				uid = key;
 			}
@@ -144,10 +149,7 @@ class Game {
 			};
 			this.users = Object.assign(this.users, updated_user);
 		} else {
-			// Remove user by key
-			let clone_users = Object.assign({}, this.users);
-			delete clone_users[uid];
-			this.users = clone_users;
+			delete this.users[uid];
 		}
 	};
 }
