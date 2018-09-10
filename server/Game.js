@@ -30,7 +30,7 @@ class Game {
 		    }
 
 		    this.SOCKET_LIST[socket.id] = socket;
-		    this.createPlayer(socket, user);
+		    let player = this.createPlayer(socket, user);
 
 		    socket.on('message', (data) => {
 			    console.log(data);
@@ -41,15 +41,25 @@ class Game {
 			    });
 		    });
 
-
-		    this.run();
-
 		    socket.on('disconnect', () => {
 			    this.removeSocket(socket.id);
 			    delete this.SOCKET_LIST[socket.id];
 			    delete this.PLAYER_LIST[socket.id];
 			    this.io.emit('updateUsersList', this.getUsers());
 		    });
+
+		    socket.on('keyPress',function(data){
+			    if(data.inputId === 'left')
+				    player.pressingLeft = data.state;
+			    else if(data.inputId === 'right')
+				    player.pressingRight = data.state;
+			    else if(data.inputId === 'up')
+				    player.pressingUp = data.state;
+			    else if(data.inputId === 'down')
+				    player.pressingDown = data.state;
+		    });
+
+		    this.run();
 	    });
     }
 
@@ -58,11 +68,10 @@ class Game {
 		    let pack = [];
 		    Object.keys(this.PLAYER_LIST).forEach((key)=>{
 			    let player = this.PLAYER_LIST[key];
-			    player.x++;
-			    player.y++;
+			    player.updatePosition();
 			    pack.push({
-				    x : player.x++,
-				    y : player.y++,
+				    x : player.x,
+				    y : player.y,
 				    display : player.display,
 				    color : player.color
 			    });
@@ -70,7 +79,7 @@ class Game {
 		    Object.keys(this.SOCKET_LIST).forEach((key)=> {
 			    this.SOCKET_LIST[key].emit('newPosition', pack);
 		    });
-	    }, 1000);
+	    }, 1000/25);
 
     }
 
@@ -111,7 +120,9 @@ class Game {
             pressingDown: false,
             pressingLeft: false,
         };
-		this.PLAYER_LIST[socket.id] = new Player(playerConfig);
+        let player = new Player(playerConfig);
+		this.PLAYER_LIST[socket.id] = player;
+		return player;
 	}
 
 	removeSocket(socket_id){

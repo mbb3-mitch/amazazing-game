@@ -95,7 +95,7 @@ class Chat extends React.Component {
             <div className="chat">
                 {this.state.chat_ready ? (
                     <React.Fragment>
-                        <Game/>
+                        <Game socket={this.socket}/>
                         <Users users={this.state.users}/>
                         <Messages
                             sendMessage={this.sendMessage.bind(this)}
