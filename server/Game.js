@@ -23,17 +23,16 @@ class Game {
 
 		    if(this.users[user.uid] !== undefined){
 			    this.createSocket(user);
-			    socket.emit('updateUsersList', this.getUsers());
+			    socket.emit('updateUsersList', this.getUsernames());
 		    }
 		    else{
 			    this.createUser(user);
-			    this.io.emit('updateUsersList', this.getUsers());
+			    this.io.emit('updateUsersList', this.getUsernames());
 		    }
 
 		    this.SOCKET_LIST[socket.id] = socket;
 		    let player = this.createPlayer(socket, user);
 		    this.initializeSocketListeners(socket, player);
-
 
 		    this.run();
 	    });
@@ -55,7 +54,6 @@ class Game {
 			    socket.emit('newPosition', pack);
 		    });
 	    }, 1000/25);
-
     }
 
 	initializeSocketListeners(socket, player) {
@@ -83,22 +81,14 @@ class Game {
 			this.removeSocket(socket.id);
 			delete this.SOCKET_LIST[socket.id];
 			delete this.PLAYER_LIST[socket.id];
-			this.io.emit('updateUsersList', this.getUsers());
+			this.io.emit('updateUsersList', this.getUsernames());
 		});
 	}
 
-	getUsers(){
+	getUsernames(){
 		return _.map(this.users, (user)=>{
 			return user.username;
 		});
-	}
-
-	createSocket(user){
-		let cur_user = this.users[user.uid],
-			updated_user = {
-				[user.uid] : Object.assign(cur_user, {sockets : [...cur_user.sockets, user.socket_id]})
-			};
-		this.users = Object.assign(this.users, updated_user);
 	}
 
 	createUser(user){
@@ -127,6 +117,14 @@ class Game {
         let player = new Player(playerConfig);
 		this.PLAYER_LIST[socket.id] = player;
 		return player;
+	}
+
+	createSocket(user){
+		let cur_user = this.users[user.uid],
+			updated_user = {
+				[user.uid] : Object.assign(cur_user, {sockets : [...cur_user.sockets, user.socket_id]})
+			};
+		this.users = Object.assign(this.users, updated_user);
 	}
 
 	removeSocket(socket_id){
