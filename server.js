@@ -11,6 +11,10 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/typing', (req, res) => {
+	res.sendFile(__dirname + '/typing.html');
+});
+
 server.listen(port, () => {
   console.log('Running server on 127.0.0.1:' + port);
 });

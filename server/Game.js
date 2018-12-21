@@ -53,7 +53,7 @@ class Game {
 		    _.each(this.SOCKET_LIST, (socket) => {
 			    socket.emit('newPosition', pack);
 		    });
-	    }, 1000/25);
+	    }, 40);
     }
 
 	initializeSocketListeners(socket, player) {
