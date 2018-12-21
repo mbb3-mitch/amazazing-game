@@ -7,12 +7,17 @@ import Navbar from './components/Navbar';
 import Chat from './components/chat/Chat';
 
 class App extends React.Component{
-
+constructor(){
+    super();
+    this.state = {
+        mode : 'game'
+    }
+}
     render(){
         return(
             <React.Fragment>
-                <Navbar/>
-                <Chat/>
+                <Navbar  mode={this.state.mode}/>
+                <Chat mode={this.state.mode}/>
             </React.Fragment>
         )
     }
