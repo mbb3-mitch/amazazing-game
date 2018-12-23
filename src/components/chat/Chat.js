@@ -101,7 +101,7 @@ class Chat extends React.Component {
 	                    {this.state.game ? (
 		                    <Game socket={this.socket}/>
 	                    ) : (
-		                    <Typing socket={this.socket}/>
+		                    <Typing/>
 	                    )}
 
                         <Users users={this.state.users}/>

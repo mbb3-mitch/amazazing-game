@@ -1,5 +1,8 @@
 import React from 'react';
-import CanvasComponent from "./CanvasComponent";
+import $ from 'jquery';
+import WordSection from './WordSection';
+import TypingTextBox from './TypingTextBox';
+import CountDownTimer from './CountDownTimer';
 
 let wordList = [
 	"the", "name", "of", "very", "to", "through", "and", "just", "a",
@@ -83,180 +86,147 @@ class Typing extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.socket = props.socket;
-		this.gameCanvas = React.createRef();
+		this.initialWords = wordList.map((word, index) => {
+			return {
+				value : word,
+				current : index === 0,
+				status : ''
+			}
+		});
+		this.state = {
+			words : this.initialWords,
+			currentWordIndex : 0,
+			correctWordCount : 0,
+			incorrectWordCount : 0,
+			totalWordCount : 0,
+			charactersTyped : 0,
+			seconds : 10,
+			started : false,
+			finished : false,
+			wpm : 0,
+			accuracy : 0
+		};
+		this.handleSubmitWord = this.handleSubmitWord.bind(this);
+		this.handleChange = this.handleChange.bind(this);
+		this.handleTimeUp = this.handleTimeUp.bind(this);
 	}
+
+	handleSubmitWord(data) {
+		this.checkWord(data)
+	}
+
+	handleChange() {
+		let updateState = {
+			charactersTyped : this.state.charactersTyped + 1
+		};
+		if (!this.state.started) {
+			updateState.started = true;
+		}
+		this.setState(updateState);
+	}
+
+	handleTimeUp() {
+		this.calculateWPM();
+	}
+
+	checkWord(typedWord) {
+		let charactersTyped = typedWord.length;
+		let words = [].concat(this.state.words);
+		let index = this.state.currentWordIndex;
+		let currentWord = words[index];
+		let status = typedWord === currentWord.value ? 'correct' : 'incorrect';
+		let updatedCurrentWord = {
+			value : currentWord.value,
+			status,
+			current : false
+		};
+		words[index] = updatedCurrentWord;
+
+
+		let nextWord = words[++index];
+		let updatedNextWord = {
+			value : nextWord.value,
+			status : '',
+			current : true
+		};
+		words[index] = updatedNextWord;
+		let wordsIndex = this.clearLine(words, index);
+		this.setState((state) => ({
+			words : wordsIndex.words,
+			currentWordIndex : wordsIndex.index,
+			correctWordCount : status === 'correct' ? state.correctWordCount + 1 : state.correctWordCount,
+			incorrectWordCount : status === 'incorrect' ? state.incorrectWordCount + 1 : state.incorrectWordCount,
+			totalWordCount : state.totalWordCount + 1,
+			charactersTyped : state.charactersTyped + charactersTyped
+		}));
+	}
+
+	clearLine(words, index) {
+		// remove past words once you get to the next line
+		let current = $(".word--current")[0]; // second line (first word)
+		let next = current.nextSibling; // first line (last word)
+
+
+		// <span>'s on the next line have a greater offsetTop value
+		// than those on the top line.
+		// Remove words until the first word on the second line
+		// is the fistChild of word-section.
+		if (current.offsetTop < next.offsetTop) {
+			while (words[0].status) {
+				words.shift();
+				index--;
+			}
+		}
+		return {words, index};
+	}
+
 
 	componentDidMount(){
-		// jQuery like selection of elements.
-		window.$ = document.querySelectorAll.bind(document);
 
-		// Changes for  Firefox
-		if (navigator.userAgent.match(/firefox/i)) {
-			// Unicode font sizes
-			let ffBtn = "font-weight: normal; font-size: 2em; margin-left: 0.3em;";
-			$("#restart-symbol")[0].setAttribute("style", ffBtn);
-
-			let ffwait = "line-height: 1em; font-size: 4em;";
-			$(".waiting")[0].setAttribute("style", ffwait);
-		}
-		this.addWords();
 	}
-
-	//////////////////////////////////////////
-
-// Knuth-Fisher-Yates Shuffle
-// http://bost.ocks.org/mike/shuffle/
-	shuffle(array) {
-		let m = array.length, t, i;
-		// While there remain elements to shuffle…
-		while (m) {
-			// Pick a remaining element…
-			i = Math.floor(Math.random() * m--);
-			// And swap it with the current element.
-			t = array[m];
-			array[m] = array[i];
-			array[i] = t;
-		}
-		return array;
-	}
-
-// Add words to word-section
-
-	addWords() {
-		// clear existing word-section
-		let wordSection = $("#word-section")[0];
-		wordSection.innerHTML = "";
-		$("#typebox")[0].value = "";
-
-		for (let i = 350; i > 0; i--) {
-			let words = this.shuffle(wordList);
-			let wordSpan = `<span>${words[i]}</span>`;
-			wordSection.innerHTML += wordSpan;
-		}
-		// mark first word as current-word
-		wordSection.firstChild.classList.add("current-word");
-
-		// mark last word with magic-box
-		// let magicBox = document.createElement("DIV");
-		// magicBox.classList.add("magic-box");
-		// wordSection.appendChild(magicBox);
-	}
-
-//////////////////////////////////////////
 
 //////////////////////////////////////////
 // Initial implementation notes:
 // next word on <space>, if empty, then set value=""
-// after <space> if value == current-word, mark as correct-word
+// after <space> if value == word--current, mark as correct-word
 // else, mark as incorrect-word
-// if value.length != current-word[:value.length], mark as incorrect-word
-// else, mark as current-word
+// if value.length != word--current[:value.length], mark as incorrect-word
+// else, mark as word--current
 //////////////////////////////////////////
 
-	checkWord(word) {
-		let wlen = word.value.length;
-		// how much we have of the current word.
-		let current = $(".current-word")[0];
-		let currentSubstring = current.innerHTML.substring(0, wlen);
-		// check if we have any typing errors
-		if (word.value.trim() != currentSubstring) {
-			current.classList.add("incorrect-word-bg");
-			return false;
-		} else {
-			current.classList.remove("incorrect-word-bg");
-			return true;
-		}
-	}
 
 	submitWord(word) {
-		// update current-word and
+		// update word--current and
 		// keep track of correct & incorrect words
-		let current = $(".current-word")[0];
+		let current = $(".word--current")[0];
 
 		if (this.checkWord(word)) {
-			current.classList.remove("current-word");
+			current.classList.remove("word--current");
 			current.classList.add("correct-word-c");
 			wordData.correct += 1;
 		} else {
-			current.classList.remove("current-word", "incorrect-word-bg");
+			current.classList.remove("word--current", "incorrect-word-bg");
 			current.classList.add("incorrect-word-c");
 			wordData.incorrect += 1;
 		}
 		// update wordData
 		wordData.total = wordData.correct + wordData.incorrect;
 
-		// make the next word the new current-word.
-		current.nextSibling.classList.add("current-word");
+		// make the next word the new word--current.
+		current.nextSibling.classList.add("word--current");
 	}
 
-	clearLine() {
-		// remove past words once you get to the next line
-		let wordSection = $("#word-section")[0];
-		let current = $(".current-word")[0]; // second line (first word)
-		let previous = current.previousSibling; // first line (last word)
-		let children = $(".correct-word-c, .incorrect-word-c").length;
-
-		// <span>'s on the next line have a greater offsetTop value
-		// than those on the top line.
-		// Remove words until the first word on the second line
-		// is the fistChild of word-section.
-		if (current.offsetTop > previous.offsetTop) {
-			for (let i = 0; i < children; i++) {
-				wordSection.removeChild(wordSection.firstChild);
-			}
+	calculateWPM() {
+		let wpm = Math.ceil(((this.state.correctWordCount) - (this.state.incorrectWordCount) )/ (this.state.seconds / 60));
+		let accuracy = Math.ceil((this.state.correctWordCount / this.state.totalWordCount) * 100) || 0;
+		if (wpm < 0) {
+			wpm = 0;
 		}
-	}
-
-	isTimer(seconds) {
-		// BUG: page refresh with keyboard triggers onkeyup and starts timer
-		// Use restart button to reset timer
-
-		let time = seconds;
-		// only set timer once
-		let one = $("#timer > span")[0].innerHTML;
-		if (one == "1:00") {
-			let typingTimer = setInterval(() => {
-				if (time <= 0) {
-					clearInterval(typingTimer);
-				} else {
-					time -= 1;
-					let timePad = (time < 10) ? ("0" + time) : time; // zero padded
-					$("#timer > span")[0].innerHTML = `0:${timePad}`;
-				}
-			}, 1000);
-		} else if (one == "0:00") {return false;}
-		return true;
-	}
-
-	calculateWPM(data) {
-		let {seconds, correct, incorrect, total, typed} = data;
-		let min = (seconds / 60);
-		let wpm = Math.ceil((typed / 5) - (incorrect) / min);
-		let accuracy = Math.ceil((correct / total) * 100);
-
-		if (wpm < 0) {wpm = 0;}     // prevent negative wpm from incorrect words
-
-		// template strings are pretty cool
-		let results = `<ul id="results">
-        <li>WPM: <span class="wpm-value">${wpm}</span></li>
-        <li>Accuracy: <span class="wpm-value">${accuracy}%</span></li>
-        <li id="results-stats">
-        Total Words: <span>${total}</span> |
-        Correct Words: <span>${correct}</span> |
-        Incorrect Words: <span>${incorrect}</span> |
-        Characters Typed: <span>${typed}</span>
-        </li>
-        </ul>`;
-
-		$("#word-section")[0].innerHTML = results;
-
-		// color code accuracy
-		let wpmClass = $("li:nth-child(2) .wpm-value")[0].classList;
-		if (accuracy > 80) {wpmClass.add("correct-word-c");}
-		else { wpmClass.add("incorrect-word-c");}
-
-		console.log(wordData);
+		this.setState({
+			wpm,
+			accuracy,
+			finished : true
+		});
 	}
 
 	typingTest(e) {
@@ -294,8 +264,19 @@ class Typing extends React.Component {
 	}
 
 	restartTest() {
-		$("#typebox")[0].value = "";
-		location.reload();
+		this.setState({
+			words : this.initialWords,
+			currentWordIndex : 0,
+			correctWordCount : 0,
+			incorrectWordCount : 0,
+			totalWordCount : 0,
+			charactersTyped : 0,
+			seconds : 10,
+			started : false,
+			finished : false,
+			wpm : 0,
+			accuracy : 0
+		})
 	}
 
 	render() {
@@ -304,16 +285,25 @@ class Typing extends React.Component {
 				<header>
 					<h3>ES6 Typing Test</h3>
 				</header>
-				<section id="word-section">
-					<div className="waiting">⌛</div>
-				</section>
-				<section id="type-section">
-					<input id="typebox" name="typebox" type="text" tabIndex="1" autoFocus onKeyUp={ (event) =>this.typingTest(event)}/>
-					<div id="timer" className="type-btn"><span>1:00</span></div>
+				<WordSection id="word-section" words={this.state.words}/>
+				<section className="type-section">
+					<TypingTextBox handleSubmitWord={this.handleSubmitWord} handleChange={this.handleChange} disabled={this.state.finished}/> {this.state.started ?
+					<CountDownTimer secondsRemaining={this.state.seconds} handleTimeUp={this.handleTimeUp}/> :
+					<div className="type-btn timer">1:00</div>
+				}
 					<button id="restart" className="type-btn" tabIndex="2" onClick={ () =>this.restartTest()}>
 						<span id="restart-symbol">↻</span>
 					</button>
 				</section>
+				{this.state.finished &&
+				<ul id="results">
+					<li>WPM: <span className="wpm-value">{this.state.wpm}</span></li>
+					<li>Accuracy: <span className="wpm-value">{this.state.accuracy}%</span></li>
+					<li id="results-stats">
+						Total Words: <span>{this.state.totalWordCount}</span> | Correct Words: <span>{this.state.correctWordCount}</span> | Incorrect Words: <span>{this.state.incorrectWordCount}</span> | Characters Typed: <span>{this.state.charactersTyped}</span>
+					</li>
+				</ul>
+				}
 			</div>
 		)
 	}

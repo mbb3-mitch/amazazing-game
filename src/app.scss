@@ -161,7 +161,7 @@ $color-base3: #68A143;
 $color-base4: #467F21;
 
 /* Word Colors */
-$color-current-word: #dddddd;
+$color-word--current: #dddddd;
 $color-correct-word: $color-base0;
 $color-incorrect-word: #e50000;
 /************************************************/
@@ -198,7 +198,7 @@ section {
   padding: 0.5em;
 }
 
-#word-section {
+#word-section, .word-section {
   font-size: 1.5em;
   height: 4em;
   line-height: 2em; /* hide 3rd line of text */
@@ -212,14 +212,14 @@ section {
   }
 }
 
-#type-section {
+.type-section {
   text-align: center;
   > * {
     font-size: 1.5em;
     display: inline-block;
     border-radius: 0.25em;
     border: none;
-    color: #fff;
+    color: #000;
     vertical-align: middle;
   }
 }
@@ -234,7 +234,7 @@ section {
   }
 }
 
-#timer {
+#timer, .timer {
   width: 4em;
   background-color: $color-base4;
   margin-right: 0;
@@ -293,11 +293,18 @@ section {
   font-size: 3em;
 }
 
-.current-word {
-  background-color: $color-current-word
+.word--current {
+  background-color: $color-word--current
 }
 
-;
+.word--correct {
+  color: $color-base0;
+}
+
+.word--incorrect {
+  color: $color-incorrect-word;
+}
+
 
 .correct-word-c {
   color: $color-base0;
@@ -309,4 +316,8 @@ section {
 
 .incorrect-word-bg {
   background-color: $color-incorrect-word;
+}
+
+.typing-text-box {
+  color : black;
 }
