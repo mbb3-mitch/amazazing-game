@@ -14,7 +14,7 @@ class Navbar extends React.Component {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav ml-auto">
 	                    <li className="nav-item float-right">
-		                    <a className="nav-link" target="_blank" href="/typing"> Typing test </a>
+		                    <a className="nav-link" onClick={()=>this.props.toggleMode(this.props.mode === 'typing' ? 'game' : 'typing')}>{this.props.mode === 'typing' ? 'Game' : 'Typing'}</a>
 	                    </li>
                         <li className="nav-item float-right">
                             <a className="nav-link" target="_blank" href="https://github.com/mbb3-mitch/amazazing-game">

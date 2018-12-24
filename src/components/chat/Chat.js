@@ -1,7 +1,7 @@
 import React from 'react';
 import Users from "./Users";
-import Game from "./Game";
-import Typing from "./Typing";
+import Game from "../game/Game";
+import Typing from "../typing_test/Typing";
 import Messages from "./Messages";
 import EnterChat from "./EnterChat";
 import socketIOClient from 'socket.io-client';
@@ -17,8 +17,7 @@ class Chat extends React.Component {
             chat_ready : false,
             users : [],
             messages : [],
-	        message : '',
-	        game : false
+	        message : ''
         }
     }
 
@@ -98,12 +97,8 @@ class Chat extends React.Component {
             <div className="chat">
                 {this.state.chat_ready ? (
                     <React.Fragment>
-	                    {this.state.game ? (
-		                    <Game socket={this.socket}/>
-	                    ) : (
-		                    <Typing/>
-	                    )}
-
+	                    {this.props.mode === 'game' && <Game socket={this.socket}/>}
+	                    {this.props.mode === 'typing' && <Typing/>}
                         <Users users={this.state.users}/>
                         <Messages
                             sendMessage={this.sendMessage.bind(this)}
