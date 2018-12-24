@@ -172,6 +172,17 @@ $color-incorrect-word: #e50000;
   height: 2.2em;
 }
 
+%green-btn{
+  @extend %type-btn;
+  background-color: $color-base3;
+  &:hover {
+    background-color: $color-base4;
+  }
+  &:active {
+    box-shadow: 1px 1px 4px $color-base4 inset;
+  }
+}
+
 %magic-word-section {
   border: 1px solid #999;
   background-color: #fff;
@@ -238,26 +249,21 @@ section {
   width: 4em;
   background-color: $color-base4;
   margin-right: 0;
-  @extend %type-btn;
 }
 
 #restart {
   width: 2em;
-  background-color: $color-base3;
-  @extend %type-btn;
+  @extend %green-btn;
   > span {
     display: inline-block;
-    transform: rotate(1.5Rad);
     font-weight: bold;
-  }
-  &:hover {
-    background-color: $color-base4;
-  }
-  &:active {
-    box-shadow: 1px 1px 4px $color-base4 inset;
   }
 }
 
+.nav-btn{
+  @extend %green-btn;
+  margin: 10px;
+}
 #results {
   text-align: center;
   margin: 0 1%;

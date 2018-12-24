@@ -15,11 +15,18 @@ app.get('/typing', (req, res) => {
 	res.sendFile(__dirname + '/typing.html');
 });
 
-app.get('/test', (req, res) => {
-	const test = require('./server/typing_tests/500_words');
-	res.setHeader('Content-Type', 'application/json');
-	res.send(test);
+app.get('/typing-test/:testID', (req, res) => {
+	try {
+		const test = require(`./server/typing_tests/${req.params.testID}`);
+		res.setHeader('Content-Type', 'application/json');
+		res.send(test);
+	} catch (e) {
+		console.log(e);
+		res.send({});
+	}
+
 });
+
 
 server.listen(port, () => {
   console.log('Running server on 127.0.0.1:' + port);
