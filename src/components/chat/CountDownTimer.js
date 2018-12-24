@@ -10,11 +10,14 @@ class CountDownTimer extends React.Component {
 	}
 
 	tick() {
-		this.setState((state) => ({secondsRemaining : state.secondsRemaining - 1}));
-		if (this.state.secondsRemaining <= 0) {
-			clearInterval(this.interval);
-			this.props.handleTimeUp();
-		}
+		let secondsRemaining = this.state.secondsRemaining - 1;
+		this.props.updateTimeRemaining(secondsRemaining);
+		this.setState((state) => ({secondsRemaining}), () => {
+			if (this.state.secondsRemaining <= 0) {
+				clearInterval(this.interval);
+				this.props.handleTimeUp();
+			}
+		});
 	}
 
 	componentDidMount() {
