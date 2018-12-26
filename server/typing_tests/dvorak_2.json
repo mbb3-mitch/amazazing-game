@@ -53,5 +53,6 @@
 		"et"
 	],
 	"previousTest" : "dvorak_1",
-	"nextTest" : "dvorak_3"
+	"nextTest" : "dvorak_3",
+	"timer" : false
 }

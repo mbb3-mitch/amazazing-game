@@ -6,7 +6,7 @@ import TypingTextBox from './TypingTextBox';
 import CountDownTimer from './CountDownTimer';
 
 
-const AVG_WORD_LENGTH = 6;
+const AVG_WORD_LENGTH = 5;
 class Typing extends React.Component {
 
 	constructor(props) {
@@ -131,7 +131,7 @@ class Typing extends React.Component {
 	}
 
 	calculateWPM() {
-		let accuracy = (this.state.correctCharactersTyped / this.state.charactersTyped) || 1;
+		let accuracy = (this.state.correctWordCount / this.state.totalWordCount) || 1;
 		let avgWordsTyped = this.state.correctCharactersTyped / AVG_WORD_LENGTH;
 		let timeElapsed = (this.state.testDuration - this.state.timeRemaining) || 1;
 		let wordsPerSecond = avgWordsTyped / timeElapsed;

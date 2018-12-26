@@ -52,5 +52,6 @@
 		"huh",
 		"uhh"
 	],
-	"nextTest" : "dvorak_2"
+	"nextTest" : "dvorak_2",
+	"timer" : false
 }
