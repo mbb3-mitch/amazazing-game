@@ -8,6 +8,7 @@
     "classnames": "^2.2.6",
     "express": "^4.15.2",
     "font-awesome": "^4.7.0",
+    "fs": "0.0.1-security",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.3",
     "react": "^16.4.0",

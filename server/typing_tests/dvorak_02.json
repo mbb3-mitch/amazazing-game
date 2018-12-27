@@ -52,7 +52,7 @@
 		"tete",
 		"et"
 	],
-	"previousTest" : "dvorak_1",
-	"nextTest" : "dvorak_3",
+	"previousTest" : "dvorak_01",
+	"nextTest" : "dvorak_03",
 	"timer" : false
 }

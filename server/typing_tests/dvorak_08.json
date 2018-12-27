@@ -64,7 +64,7 @@
 		"hid",
 		"hid"
 	],
-	"previousTest" : "dvorak_6",
-	"nextTest" : "dvorak_9",
+	"previousTest" : "dvorak_06",
+	"nextTest" : "dvorak_09",
 	"timer" : false
 }

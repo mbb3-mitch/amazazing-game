@@ -2,6 +2,8 @@ let express = require('express');
 let app = require('express')();
 let server = require('http').Server(app);
 let io = require('socket.io')(server);
+let fs = require('fs');
+let _ = require('underscore');
 let port = 8989;
 const Game = require('./server/Game');
 
@@ -9,10 +11,6 @@ app.use('/assets', express.static(__dirname + '/dist'));
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
-});
-
-app.get('/typing', (req, res) => {
-	res.sendFile(__dirname + '/typing.html');
 });
 
 app.get('/typing-test/:testID', (req, res) => {
@@ -27,6 +25,25 @@ app.get('/typing-test/:testID', (req, res) => {
 
 });
 
+
+app.get('/loadTests', (req, res) => {
+	const typingTestDir = './server/typing_tests';
+	fs.readdir(typingTestDir, (err, files)=>{
+		if (err){
+			console.error(err);
+			return;
+		}
+		let typingTests = [];
+		_.each(files, (file)=>{
+			let testConfig = require(`${typingTestDir}/${file}`);
+			typingTests.push({
+				path : file.replace(/\.json/, ''),
+				testID : testConfig.testName
+			});
+		});
+		res.send({typingTests});
+	});
+});
 
 server.listen(port, () => {
   console.log('Running server on 127.0.0.1:' + port);

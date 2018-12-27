@@ -52,7 +52,7 @@
 		"a",
 		"sas"
 	],
-	"previousTest" : "dvorak_5",
-	"nextTest" : "dvorak_7",
+	"previousTest" : "dvorak_05",
+	"nextTest" : "dvorak_07",
 	"timer" : false
 }
