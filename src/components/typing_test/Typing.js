@@ -11,13 +11,28 @@ class Typing extends React.Component {
 
 	constructor(props) {
 		super(props);
-		let initialWords = _.map(props.gameState.words, (word, index) => {
+		this._setInitialState(this._mapWords(props.gameState.words));
+		this.handleSubmitWord = this.handleSubmitWord.bind(this);
+		this.handleChange = this.handleChange.bind(this);
+		this.handleTimeUp = this.handleTimeUp.bind(this);
+		this.updateTimeRemaining = this.updateTimeRemaining.bind(this);
+	}
+
+	componentWillReceiveProps(props) {
+		this._setInitialState(this._mapWords(props.gameState.words))
+	}
+
+	_mapWords(words) {
+		return _.map(words, (word, index) => {
 			return {
 				value : word,
 				current : index === 0,
 				status : ''
 			}
 		});
+	}
+
+	_setInitialState(initialWords) {
 		this.initialState = {
 			words : initialWords,
 			currentWordIndex : 0,
@@ -35,14 +50,12 @@ class Typing extends React.Component {
 			accuracy : 0,
 			inputField : ''
 		};
-
-		this.state = this.initialState;
-		this.handleSubmitWord = this.handleSubmitWord.bind(this);
-		this.handleChange = this.handleChange.bind(this);
-		this.handleTimeUp = this.handleTimeUp.bind(this);
-		this.updateTimeRemaining = this.updateTimeRemaining.bind(this);
+		if (!this.state){
+			this.state = this.initialState;
+			return;
+		}
+		this.setState(this.initialState);
 	}
-
 	handleSubmitWord(data) {
 		this.checkWord(data)
 	}
@@ -184,7 +197,6 @@ class Typing extends React.Component {
 					</li>
 				</ul>
 				}
-				{(this.props.gameState.previousTest || this.props.gameState.nextTest) &&
 				<section className="type-section">
 					<button className="nav-btn" onClick={()=>this.props.selectGameState('menu')}>
 						<span>Back</span>
@@ -199,7 +211,7 @@ class Typing extends React.Component {
 						<span>Next Test</span>
 					</button>
 					}
-				</section>}
+				</section>
 			</div>
 		)
 	}
