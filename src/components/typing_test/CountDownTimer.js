@@ -5,23 +5,28 @@ class CountDownTimer extends React.Component {
 		super(props);
 		this.tick = this.tick.bind(this);
 		this.state = {
-			secondsRemaining : props.secondsRemaining
+			timeElapsed : 0
 		}
 	}
 
 	tick() {
-		let secondsRemaining = this.state.secondsRemaining - 1;
-		this.props.updateTimeRemaining(secondsRemaining);
-		this.setState((state) => ({secondsRemaining}), () => {
-			if (this.state.secondsRemaining <= 0) {
-				clearInterval(this.interval);
-				this.props.handleTimeUp();
-			}
-		});
+		if (this.props.finished){
+			clearInterval(this.interval);
+			return;
+		}
+		if (this.props.started){
+			let timeElapsed = this.state.timeElapsed  + 1;
+			this.props.updateTimeElapsed(timeElapsed);
+			this.setState({timeElapsed}, () => {
+				if (this.state.timeElapsed >= this.props.testDuration) {
+					clearInterval(this.interval);
+					this.props.handleTimeUp();
+				}
+			});
+		}
 	}
 
 	componentDidMount() {
-		this.setState({secondsRemaining : this.props.secondsRemaining});
 		this.interval = setInterval(this.tick, 1000);
 	}
 
@@ -29,9 +34,13 @@ class CountDownTimer extends React.Component {
 		clearInterval(this.interval);
 	}
 
+	secondsRemaining(){
+		return this.props.testDuration - this.state.timeElapsed;
+	}
+
 	render() {
-		let minute = Math.floor(this.state.secondsRemaining / 60);
-		let seconds = this.state.secondsRemaining % 60;
+		let minute = Math.floor(this.secondsRemaining() / 60);
+		let seconds = this.secondsRemaining() % 60;
 		let time = `${minute}:${seconds > 9 ? seconds : '0' + seconds}`;
 		return (
 			<div className="type-btn timer">{time}</div>

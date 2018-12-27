@@ -51,7 +51,8 @@ class App extends React.Component{
 
 	render() {
         return(
-	        <React.Fragment> <Navbar mode={this.state.mode} selectGameState={this.selectGameState}/> <Chat mode={this.state.mode} gameState={this.state.gameState} selectGameState={this.selectGameState}/>
+	        <React.Fragment> <Navbar mode={this.state.mode} selectGameState={this.selectGameState}/>
+		        <Chat mode={this.state.mode} gameState={this.state.gameState} selectGameState={this.selectGameState}/>
             </React.Fragment>
         )
     }

@@ -4,7 +4,7 @@ import _ from 'underscore';
 import WordSection from './WordSection';
 import TypingTextBox from './TypingTextBox';
 import CountDownTimer from './CountDownTimer';
-
+import StopWatch from "./Stopwatch";
 
 const AVG_WORD_LENGTH = 5;
 class Typing extends React.Component {
@@ -15,7 +15,7 @@ class Typing extends React.Component {
 		this.handleSubmitWord = this.handleSubmitWord.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.handleTimeUp = this.handleTimeUp.bind(this);
-		this.updateTimeRemaining = this.updateTimeRemaining.bind(this);
+		this.updateTimeElapsed = this.updateTimeElapsed.bind(this);
 	}
 
 	componentWillReceiveProps(props) {
@@ -42,10 +42,12 @@ class Typing extends React.Component {
 			charactersTyped : 0,
 			correctCharactersTyped : 0,
 			incorrectCharactersTyped : 0,
-			testDuration : 60,
-			timeRemaining : 60,
+			testDuration : this.props.gameState.testDuration || 0,
+			timeRemaining : this.props.gameState.testDuration || 0,
+			timeElapsed : 0,
 			started : false,
 			finished : false,
+			paused : false,
 			wpm : 0,
 			accuracy : 0,
 			inputField : ''
@@ -82,7 +84,14 @@ class Typing extends React.Component {
 
 	updateTimeRemaining(timeRemaining) {
 		this.setState({
-			timeRemaining
+			timeRemaining,
+			timeElapsed : this.state.testDuration - timeRemaining
+		});
+	}
+
+	updateTimeElapsed(timeElapsed) {
+		this.setState({
+			timeElapsed
 		});
 	}
 
@@ -146,8 +155,7 @@ class Typing extends React.Component {
 	calculateWPM() {
 		let accuracy = (this.state.correctWordCount / this.state.totalWordCount) || 1;
 		let avgWordsTyped = this.state.correctCharactersTyped / AVG_WORD_LENGTH;
-		let timeElapsed = (this.state.testDuration - this.state.timeRemaining) || 1;
-		let wordsPerSecond = avgWordsTyped / timeElapsed;
+		let wordsPerSecond = avgWordsTyped / this.state.timeElapsed;
 		let wpm = Math.ceil(wordsPerSecond * 60);
 		if (wpm < 0) {
 			wpm = 0;
@@ -180,9 +188,9 @@ class Typing extends React.Component {
 				<WordSection id="word-section" words={this.state.words}/>
 				}
 				<section className="type-section">
-					<TypingTextBox handleSubmitWord={this.handleSubmitWord} handleChange={this.handleChange} disabled={this.state.finished} inputField={this.state.inputField}/> {this.state.started && !this.state.finished ?
-					<CountDownTimer secondsRemaining={this.state.testDuration} handleTimeUp={this.handleTimeUp} updateTimeRemaining={this.updateTimeRemaining}/> :
-					<div className="type-btn timer">1:00</div>
+					<TypingTextBox handleSubmitWord={this.handleSubmitWord} handleChange={this.handleChange} disabled={this.state.finished} inputField={this.state.inputField}/> {this.state.testDuration ?
+					<CountDownTimer started={this.state.started} paused={this.state.paused} finished={this.state.finished} testDuration={this.state.testDuration} updateTimeElapsed={this.updateTimeElapsed} handleTimeUp={this.handleTimeUp}/> :
+					<StopWatch started={this.state.started} paused={this.state.paused} finished={this.state.finished} timeElapsed={this.state.timeElapsed} updateTimeElapsed={this.updateTimeElapsed}/>
 				}
 					<button id="restart" className="type-btn" tabIndex="2" onClick={ () =>this.restartTest()}>
 						<span id="restart-symbol">↻</span>

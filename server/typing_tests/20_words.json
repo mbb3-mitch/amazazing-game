@@ -21,5 +21,6 @@
 		"say",
 		"that",
 		"help"
-	]
+	],
+	"testDuration" : 60
 }

@@ -63,5 +63,6 @@
 	"ground", "brought", "interest", "heat", "reach", "snow", "fast",
 	"bed", "five", "bring", "sing", "sit", "listen", "perhaps", "six",
 	"fill", "table", "east", "travel", "weight", "less", "language",
-	"morning", "among"]
+	"morning", "among"],
+	"testDuration" : 60
 }
