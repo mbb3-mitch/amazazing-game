@@ -5,7 +5,7 @@ import Menu from "./Menu";
 import Messages from "./Messages";
 import Users from "./Users";
 import Game from "../game/Game";
-import Typing from "../typing_test/Typing";
+import TypingTest from "../typing_test/TypingTest";
 
 class Chat extends React.Component {
 
@@ -100,7 +100,7 @@ class Chat extends React.Component {
                     <React.Fragment>
 	                    {this.props.mode === 'menu' && <Menu selectGameState={this.props.selectGameState}/>}
                         {this.props.mode === 'game' && <Game socket={this.socket}/>}
-	                    {this.props.mode === 'typing' && <Typing gameState={this.props.gameState} selectGameState={this.props.selectGameState}/>}
+	                    {this.props.mode === 'typing' && <TypingTest gameState={this.props.gameState} selectGameState={this.props.selectGameState}/>}
                         <Users users={this.state.users}/>
                         <Messages
                             sendMessage={this.sendMessage.bind(this)}

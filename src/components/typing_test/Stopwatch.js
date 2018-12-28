@@ -7,12 +7,13 @@ class StopWatch extends React.Component {
 	}
 
 	tick() {
+		if (this.props.finished) {
+			return;
+		}
 		if (this.props.started && !this.props.paused){
 			let timeElapsed = this.props.timeElapsed + 1;
 			this.props.updateTimeElapsed(timeElapsed);
-		}
-		if (this.props.finished) {
-			clearInterval(this.interval);
+			return;
 		}
 	}
 

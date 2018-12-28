@@ -1,41 +1,24 @@
 import React from 'react';
+import StopWatch from './Stopwatch'
 
-class CountDownTimer extends React.Component {
-	constructor(props) {
-		super(props);
-		this.tick = this.tick.bind(this);
-		this.state = {
-			timeElapsed : 0
-		}
-	}
+class CountDownTimer extends StopWatch {
 
 	tick() {
-		if (this.props.finished){
-			clearInterval(this.interval);
+		if (this.props.finished) {
 			return;
 		}
-		if (this.props.started){
-			let timeElapsed = this.state.timeElapsed  + 1;
-			this.props.updateTimeElapsed(timeElapsed);
-			this.setState({timeElapsed}, () => {
-				if (this.state.timeElapsed >= this.props.testDuration) {
-					clearInterval(this.interval);
-					this.props.handleTimeUp();
-				}
-			});
+		if (this.props.timeElapsed >= this.props.testDuration) {
+			this.props.handleTimeUp();
+			return;
 		}
-	}
-
-	componentDidMount() {
-		this.interval = setInterval(this.tick, 1000);
-	}
-
-	componentWillUnmount() {
-		clearInterval(this.interval);
+		if (this.props.started && !this.props.paused) {
+			let timeElapsed = this.props.timeElapsed + 1;
+			this.props.updateTimeElapsed(timeElapsed);
+		}
 	}
 
 	secondsRemaining(){
-		return this.props.testDuration - this.state.timeElapsed;
+		return this.props.testDuration - this.props.timeElapsed;
 	}
 
 	render() {

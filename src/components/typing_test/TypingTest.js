@@ -2,12 +2,13 @@ import React from 'react';
 import $ from 'jquery';
 import _ from 'underscore';
 import WordSection from './WordSection';
-import TypingTextBox from './TypingTextBox';
-import CountDownTimer from './CountDownTimer';
-import StopWatch from "./Stopwatch";
+import TypingInputSection from "./TypingInputSection";
+import Results from "./Results";
+import NavigationButtons from "./NavigationButtons";
 
 const AVG_WORD_LENGTH = 5;
-class Typing extends React.Component {
+
+class TypingTest extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -16,6 +17,7 @@ class Typing extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleTimeUp = this.handleTimeUp.bind(this);
 		this.updateTimeElapsed = this.updateTimeElapsed.bind(this);
+		this.restartTest = this.restartTest.bind(this);
 	}
 
 	componentWillReceiveProps(props) {
@@ -43,7 +45,6 @@ class Typing extends React.Component {
 			correctCharactersTyped : 0,
 			incorrectCharactersTyped : 0,
 			testDuration : this.props.gameState.testDuration || 0,
-			timeRemaining : this.props.gameState.testDuration || 0,
 			timeElapsed : 0,
 			started : false,
 			finished : false,
@@ -58,6 +59,7 @@ class Typing extends React.Component {
 		}
 		this.setState(this.initialState);
 	}
+
 	handleSubmitWord(data) {
 		this.checkWord(data)
 	}
@@ -80,13 +82,6 @@ class Typing extends React.Component {
 
 	handleTimeUp() {
 		this.finishTest();
-	}
-
-	updateTimeRemaining(timeRemaining) {
-		this.setState({
-			timeRemaining,
-			timeElapsed : this.state.testDuration - timeRemaining
-		});
 	}
 
 	updateTimeElapsed(timeElapsed) {
@@ -155,7 +150,7 @@ class Typing extends React.Component {
 	calculateWPM() {
 		let accuracy = (this.state.correctWordCount / this.state.totalWordCount) || 1;
 		let avgWordsTyped = this.state.correctCharactersTyped / AVG_WORD_LENGTH;
-		let wordsPerSecond = avgWordsTyped / this.state.timeElapsed;
+		let wordsPerSecond = avgWordsTyped / (this.state.timeElapsed || 1);
 		let wpm = Math.ceil(wordsPerSecond * 60);
 		if (wpm < 0) {
 			wpm = 0;
@@ -178,6 +173,18 @@ class Typing extends React.Component {
 		this.setState(this.initialState);
 	}
 
+	componentDidUpdate() {
+		this.focus();
+	}
+
+	componentDidMount() {
+		this.focus();
+	}
+
+	focus() {
+		$('.typing-text-box')[0].focus();
+	}
+
 	render() {
 		return (
 			<div className="game-window col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -186,43 +193,29 @@ class Typing extends React.Component {
 				</header>
 				{!this.state.finished &&
 				<WordSection id="word-section" words={this.state.words}/>
-				}
-				<section className="type-section">
-					<TypingTextBox handleSubmitWord={this.handleSubmitWord} handleChange={this.handleChange} disabled={this.state.finished} inputField={this.state.inputField}/> {this.state.testDuration ?
-					<CountDownTimer started={this.state.started} paused={this.state.paused} finished={this.state.finished} testDuration={this.state.testDuration} updateTimeElapsed={this.updateTimeElapsed} handleTimeUp={this.handleTimeUp}/> :
-					<StopWatch started={this.state.started} paused={this.state.paused} finished={this.state.finished} timeElapsed={this.state.timeElapsed} updateTimeElapsed={this.updateTimeElapsed}/>
-				}
-					<button id="restart" className="type-btn" tabIndex="2" onClick={ () =>this.restartTest()}>
-						<span id="restart-symbol">↻</span>
-					</button>
-				</section>
+				} <TypingInputSection handleSubmitWord={this.handleSubmitWord}
+				                      handleChange={this.handleChange}
+				                      finished={this.state.finished}
+				                      inputField={this.state.inputField}
+				                      testDuration={this.state.testDuration}
+				                      started={this.state.started}
+				                      paused={this.state.paused}
+				                      updateTimeElapsed={this.updateTimeElapsed}
+				                      handleTimeUp={this.handleTimeUp}
+				                      timeElapsed={this.state.timeElapsed}
+				                      restartTest={this.restartTest}/>
 				{this.state.started &&
-				<ul id="results">
-					<li>WPM: <span className="wpm-value">{this.state.wpm}</span></li>
-					<li>Accuracy: <span className="wpm-value">{Math.ceil(this.state.accuracy * 100)}%</span></li>
-					<li id="results-stats">
-						Total Words: <span>{this.state.totalWordCount}</span> | Correct Words: <span>{this.state.correctWordCount}</span> | Incorrect Words: <span>{this.state.incorrectWordCount}</span> | Characters Typed: <span>{this.state.charactersTyped}<span className='word--incorrect'>({this.state.incorrectCharactersTyped})</span></span>
-					</li>
-				</ul>
-				}
-				<section className="type-section">
-					<button className="nav-btn" onClick={()=>this.props.selectGameState('menu')}>
-						<span>Back</span>
-					</button>
-					{this.props.gameState.previousTest &&
-						<button className="nav-btn" onClick={()=>this.props.selectGameState('typing', this.props.gameState.previousTest)}>
-							<span>Previous Test</span>
-						</button>
-					}
-					{this.props.gameState.nextTest &&
-					<button className="nav-btn" onClick={()=>this.props.selectGameState('typing', this.props.gameState.nextTest)}>
-						<span>Next Test</span>
-					</button>
-					}
-				</section>
+				<Results wpm={this.state.wpm}
+				         accuracy={this.state.accuracy}
+				         totalWordCount={this.state.totalWordCount}
+				         correctWordCount={this.state.correctWordCount}
+				         incorrectWordCount={this.state.incorrectWordCount}
+				         charactersTyped={this.state.charactersTyped}
+				         incorrectCharactersTyped={this.state.incorrectCharactersTyped}/>
+				} <NavigationButtons selectGameState={this.props.selectGameState} gameState={this.props.gameState}/>
 			</div>
 		)
 	}
 }
 
-export default Typing;
+export default TypingTest;
