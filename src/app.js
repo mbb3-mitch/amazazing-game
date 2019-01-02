@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'typeface-roboto';
 import 'bootstrap';
 import 'font-awesome/css/font-awesome.css';
 import './app.scss';
 import Navbar from './components/Navbar';
+import AppBar from './components/AppBar';
 import Chat from './components/chat/Chat';
 import axios from "axios/index";
 
@@ -51,7 +53,8 @@ class App extends React.Component{
 
 	render() {
         return(
-	        <React.Fragment> <Navbar mode={this.state.mode} selectGameState={this.selectGameState}/>
+	        <React.Fragment>
+		        <AppBar mode={this.state.mode} selectGameState={this.selectGameState}/>
 		        <Chat mode={this.state.mode} gameState={this.state.gameState} selectGameState={this.selectGameState}/>
             </React.Fragment>
         )
